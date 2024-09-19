@@ -8,7 +8,7 @@
 
 This writeup was completed during the DeFiHackLabs [Web3 CTF Intensive Co-Learning](https://github.com/DeFiHackLabs/Web3-CTF-Intensive-CoLearning). 
 
-### Language Versions
+### Language
 - [English](./writeup.md) | [HackMD](https://hackmd.io/@SunWeb3Sec/rkwkCGt6R)
 - [中文版](./writeup-cht.md) | [HackMD](https://hackmd.io/@SunWeb3Sec/HkvmwJk2R)
 
