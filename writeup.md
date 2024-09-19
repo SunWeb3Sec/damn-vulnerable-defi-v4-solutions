@@ -23,7 +23,7 @@ Solution:
  if (convertToShares(totalSupply) != balanceBefore) revert InvalidBalance(); 
 ```
 
-[POC:](./test/unstoppable/Unstoppable.t.sol) 
+[POC:](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/unstoppable/Unstoppable.t.sol) 
 ```
     function test_unstoppable() public checkSolvedByPlayer {
         token.transfer(address(vault), 123);   
@@ -75,7 +75,7 @@ Solution:
     }
 
 ```
-[POC](./test/naive-receiver/NaiveReceiver.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/naive-receiver/NaiveReceiver.t.sol) : 
 ```
     function test_naiveReceiver() public checkSolvedByPlayer {
         bytes[] memory callDatas = new bytes[](11);
@@ -125,7 +125,7 @@ Solution:
 - In `flashLoan`, we can see `target.functionCall(data);` which allows executing arbitrary calldata, and the target address is controllable. Therefore, arbitrary instructions can be executed directly.
 
 
-[POC](./test/truster/Truster.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/truster/Truster.t.sol) : 
 ```
     function test_truster() public checkSolvedByPlayer {
         Exploit exploit = new Exploit(address(pool), address(token),address(recovery));
@@ -160,7 +160,7 @@ Solution:
 - So, by borrowing through `flashLoan` and then depositing the funds back into the pool, it counts as repayment. Meanwhile, since you have proof of deposit in the contract, you can execute a `withdraw` and transfer the funds out.
 
 
-[POC](./test/SideEntrance/SideEntrance.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/SideEntrance/SideEntrance.t.sol) : 
 ```
     function test_sideEntrance() public checkSolvedByPlayer {
         Exploit exploiter = new Exploit(address(pool), recovery, ETHER_IN_POOL);
@@ -212,7 +212,7 @@ Solution:
                 if (!_setClaimed(token, amount, wordPosition, bitsSet)) revert AlreadyClaimed();
             }
 ```
-[POC](./test/the-rewarder/TheRewarder.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/the-rewarder/TheRewarder.t.sol) : 
 ```
    function test_theRewarder() public checkSolvedByPlayer {
         uint PLAYER_DVT_CLAIM_AMOUNT = 11524763827831882;
@@ -288,7 +288,7 @@ Solution:
 - Exploit steps: Flashloan -> delegate -> initiate proposal with `queueAction` -> repay -> execute `executeAction`
 
 
-[POC](./test/selfie/selfie.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/selfie/selfie.t.sol) : 
 ```
     function test_selfie() public checkSolvedByPlayer {
         Exploit exploiter = new Exploit(
@@ -415,7 +415,7 @@ Wallet address: 0xA417D473c40a4d42BAd35f147c21eEa7973539D8
 ```
 - Manipulate the NFT price, buy low and sell high to gain more ETH.
 
-[POC](./test/compromised/Compromised.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/compromised/Compromised.t.sol) : 
 ```
     function test_compromised() public checkSolved {
         Exploit exploit = new Exploit{value:address(this).balance}(oracle, exchange, nft, recovery);
@@ -502,7 +502,7 @@ Solution:
 ```
 - Transfer all your DVT tokens to `uniswapV1Exchange` via `tokenToEthTransferInput` to manipulate the price.
 
-[POC](./test/puppet/Puppet.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/puppet/Puppet.t.sol) : 
 ```
     function test_puppet() public checkSolvedByPlayer {
         Exploit exploit = new Exploit{value:PLAYER_INITIAL_ETH_BALANCE}(
@@ -565,7 +565,7 @@ Solution:
 - In this challenge, the oracle has been changed to use Uniswap v2. However, `getReserves` is similar to fetching the balance, which poses a risk of manipulation.
 
 
-[POC](./test/puppet-v2/PuppetV2.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/puppet-v2/PuppetV2.t.sol) : 
 ```
 
     // Fetch the price from Uniswap v2 using the official libraries
@@ -641,14 +641,14 @@ Solution:
         payable(_token.ownerOf(tokenId)).sendValue(priceToPay);
 ```
 - By leveraging the two bugs above, you can use `uniswapV2 flashswap` to borrow 15 ETH and buy multiple NFTs. In the end, your cost is only the 0.3% flashswap fee. Since the challenge starts you with 0.1 ETH, this is more than sufficient.
-- The final step is to buy 6 NFTs and transfer them all to `FreeRiderRecoveryManager` to collect the 45 ETH bounty. [REF](https://medium.com/@JohnnyTime-v3-challenge-10-solution-free-rider-complete-walkthrough-7da8122691b3)
+- The final step is to buy 6 NFTs and transfer them all to `FreeRiderRecoveryManager` to collect the 45 ETH bounty. [REF](https://medium.com/@JohnnyTime/damn-vulnerable-defi-v3-challenge-10-solution-free-rider-complete-walkthrough-7da8122691b3)
 ```
         if (++received == 6) {
             address recipient = abi.decode(_data, (address));
             payable(recipient).sendValue(bounty);
         }
 ```
-[POC](./test/free-rider/FreeRider.t.sol) : 
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/free-rider/FreeRider.t.sol) : 
 
 ```
     function test_freeRider() public checkSolvedByPlayer {
@@ -771,7 +771,7 @@ Solution:
     ) 
 ```
 
-[POC](./test/backdoor/Backdoor.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/backdoor/Backdoor.t.sol) :
 ```
     function test_backdoor() public checkSolvedByPlayer {
              Exploit exploit = new Exploit(address(singletonCopy),address(walletFactory),address(walletRegistry),address(token),recovery);
@@ -880,7 +880,7 @@ function execute(address[] calldata targets, uint256[] calldata values, bytes[] 
 
 - Exploit steps: `grantRole` to acquire `PROPOSER_ROLE` -> update `delay` to 0 -> `transferOwnership` -> `timelockSchedule` -> upgrade the contract -> withdraw -> done.
 
-[POC](./test/climber/Climber.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/climber/Climber.t.sol) :
 
 ```
     function test_climber() public checkSolvedByPlayer {
@@ -965,7 +965,7 @@ Solution:
 - The `AuthorizerUpgradeable` contract occupies `slot0` with `needsInit`, leading to a storage collision. We can initialize the user's wallet and change the guardian (`ward`) to ourselves, receiving 1 ETH.
 
 
-[POC](./test/wallet-mining/WalletMining.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/wallet-mining/WalletMining.t.sol) :
  
 ```
     // Find the correct nonce using computeCreate2Address                      
@@ -1018,7 +1018,7 @@ Solution:
 - The pool contains 100 WETH and 100 DVT tokens, with relatively low liquidity. The `PuppetV3Pool.sol` contract uses a 10-minute TWAP period to calculate the price of DVT tokens. This setup makes the contract vulnerable to price manipulation attacks without much cost! With this method, we can exchange the 110 DVT tokens we own for WETH, making DVT tokens incredibly cheap. The oracle calculates the current price based on price data from the past 10 minutes. However, because the TWAP period is short, by making large trades within this 10-minute window (such as swapping a large amount of DVT), the price can be significantly manipulated.
 - Since TWAP is a delayed price mechanism, after manipulating the price, there is a brief time window (e.g., 110 seconds) for the attacker to take advantage of the lowered price and execute unfair loans. This window allows the attacker to exploit the price discrepancy before the TWAP price recovers to its normal level.
 
-[POC](./test/puppet-v3/PuppetV3.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/puppet-v3/PuppetV3.t.sol) :
 
 ```
     function test_puppetV3() public checkSolvedByPlayer {
@@ -1094,7 +1094,7 @@ Solution:
 85fb709d00000000000000000000000073030b99950fb19c6a813465e58a0bca5487fbea0000000000000000000000008ad159a275aee56fb2334dbb69036e9c7bacee9b
 ```
 
-[POC](./test/abi-smuggling/ABISmuggling.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/abi-smuggling/ABISmuggling.t.sol) :
 ```
     function test_abiSmuggling() public checkSolvedByPlayer {
         Exploit exploit = new Exploit(address(vault),address(token),recovery);
@@ -1229,7 +1229,7 @@ Solution:
 ```
 
 
-[POC](./test/shards/Shards.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/shards/Shards.t.sol) :
 
 ```
  
@@ -1335,7 +1335,7 @@ eaebef7f15fdaa66ecd4533eefea23a183ced29967ea67bc4219b0f1f8b0d3ba // id
  
 - Lastly, return the rescued tokens to the `tokenBridge`.
 
-[POC](./test/withdrawal/Withdrawal.t.sol) :
+[POC](https://github.com/SunWeb3Sec/damn-vulnerable-defi-solutions/tree/main//test/withdrawal/Withdrawal.t.sol) :
 
 ```
     function test_withdrawal() public checkSolvedByPlayer {
