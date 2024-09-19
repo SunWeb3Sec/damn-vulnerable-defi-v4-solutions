@@ -1,4 +1,4 @@
-## Damn Vulnerable DeFi v4 Writeup [SunSec]
+## Damn Vulnerable DeFi v4 Writeup
 
 ![Screenshot 2024-09-11 at 10 18 33 AM](https://github.com/user-attachments/assets/7e3df1a1-3fc6-4d01-8860-88e06ef820f1)
 
@@ -22,7 +22,7 @@
  if (convertToShares(totalSupply) != balanceBefore) revert InvalidBalance(); 
 ```
 
-[POC:](./damn-vulnerable-defi/test/unstoppable/Unstoppable.t.sol) 
+[POC:](./test/unstoppable/Unstoppable.t.sol) 
 ```
     function test_unstoppable() public checkSolvedByPlayer {
         token.transfer(address(vault), 123);   
@@ -74,7 +74,7 @@
     }
 
 ```
-[POC](./damn-vulnerable-defi/test/naive-receiver/NaiveReceiver.t.sol) : 
+[POC](./test/naive-receiver/NaiveReceiver.t.sol) : 
 ```
     function test_naiveReceiver() public checkSolvedByPlayer {
         bytes[] memory callDatas = new bytes[](11);
@@ -125,7 +125,7 @@
 解題:
 - 在 floashLoan 中可以看到 target.functionCall(data); 可以執行任意calldata且target的地址可控. 可直接執行任意指令.
 
-[POC](./damn-vulnerable-defi/test/truster/Truster.t.sol) : 
+[POC](./test/truster/Truster.t.sol) : 
 ```
     function test_truster() public checkSolvedByPlayer {
         Exploit exploit = new Exploit(address(pool), address(token),address(recovery));
@@ -159,7 +159,7 @@
 - flashLoan 採用非標準用法, 判斷有沒有repay只是看池子的餘額 if (address(this).balance < balanceBefore). 
 - 所以只要透過 flashLoan借款出來, 再透過deposit存回去. 就代表repay了. 然後你在合約同時有存款證明, 可執行 withdraw 就可以把$$轉出去了.
 
-[POC](./damn-vulnerable-defi/test/SideEntrance/SideEntrance.t.sol) : 
+[POC](./test/SideEntrance/SideEntrance.t.sol) : 
 ```
     function test_sideEntrance() public checkSolvedByPlayer {
         Exploit exploiter = new Exploit(address(pool), recovery, ETHER_IN_POOL);
@@ -210,7 +210,7 @@ contract Exploit{
                 if (!_setClaimed(token, amount, wordPosition, bitsSet)) revert AlreadyClaimed();
             }
 ```
-[POC](./damn-vulnerable-defi/test/the-rewarder/TheRewarder.t.sol) : 
+[POC](./test/the-rewarder/TheRewarder.t.sol) : 
 ```
    function test_theRewarder() public checkSolvedByPlayer {
         uint PLAYER_DVT_CLAIM_AMOUNT = 11524763827831882;
@@ -285,7 +285,7 @@ contract Exploit{
 - 要執行 queueAction 要通過 _hasEnoughVotes 檢查, DamnValuableVotes 繼承 ERC20Votes, 所以借貸到的DVT需要delete受投票權給自己, 需要持有總發行量的一半投票權才能發起提案.
 - 解題流程: Flashloan -> delegate ->發起提案 queueAction -> repay -> executeAction
 
-[POC](./damn-vulnerable-defi/test/selfie/selfie.t.sol) : 
+[POC](./test/selfie/selfie.t.sol) : 
 ```
     function test_selfie() public checkSolvedByPlayer {
         Exploit exploiter = new Exploit(
@@ -414,7 +414,7 @@ Wallet address: 0xA417D473c40a4d42BAd35f147c21eEa7973539D8
 ```
 - 操控NFT價格, 低買高賣即可獲得更多ETH
 
-[POC](./damn-vulnerable-defi/test/compromised/Compromised.t.sol) : 
+[POC](./test/compromised/Compromised.t.sol) : 
 ```
     function test_compromised() public checkSolved {
         Exploit exploit = new Exploit{value:address(this).balance}(oracle, exchange, nft, recovery);
@@ -499,7 +499,7 @@ Wallet address: 0xA417D473c40a4d42BAd35f147c21eEa7973539D8
 ```
 - 將自己的所有DVT透過 tokenToEthTransferInput 打到 uniswapV1Exchange 操控price.
 - 
-[POC](./damn-vulnerable-defi/test/puppet/Puppet.t.sol) : 
+[POC](./test/puppet/Puppet.t.sol) : 
 ```
     function test_puppet() public checkSolvedByPlayer {
         Exploit exploit = new Exploit{value:PLAYER_INITIAL_ETH_BALANCE}(
@@ -561,7 +561,7 @@ contract Exploit {
 解題:
 - 這關oracle改成使用 Uniswap v2, 不過 getReserves 跟取balance是一樣的意思,存在操控的風險
 
-[POC](./damn-vulnerable-defi/test/puppet-v2/PuppetV2.t.sol) : 
+[POC](./test/puppet-v2/PuppetV2.t.sol) : 
 ```
 
     // Fetch the price from Uniswap v2 using the official libraries
@@ -636,14 +636,14 @@ contract Exploit {
         payable(_token.ownerOf(tokenId)).sendValue(priceToPay);
 ```
 - 搭配以上兩個bug, 可以免費透過 uniswapV2 flashswap 借出15ETH來購買多張NFT, 最後我們的成本僅需 0.3% flashswap fee. 題目預設給我們0.1ETH,所以很足夠.
-- 最後一個步驟就是要買6張NFT, 都轉移給 FreeRiderRecoveryManager, 就可以拿到45ETH賞金了. [REF](https://medium.com/@JohnnyTime/damn-vulnerable-defi-v3-challenge-10-solution-free-rider-complete-walkthrough-7da8122691b3)
+- 最後一個步驟就是要買6張NFT, 都轉移給 FreeRiderRecoveryManager, 就可以拿到45ETH賞金了. [REF](https://medium.com/@JohnnyTime-v3-challenge-10-solution-free-rider-complete-walkthrough-7da8122691b3)
 ```
         if (++received == 6) {
             address recipient = abi.decode(_data, (address));
             payable(recipient).sendValue(bounty);
         }
 ```
-[POC](./damn-vulnerable-defi/test/free-rider/FreeRider.t.sol) : 
+[POC](./test/free-rider/FreeRider.t.sol) : 
 
 ```
     function test_freeRider() public checkSolvedByPlayer {
@@ -766,7 +766,7 @@ contract Exploit {
     ) 
 ```
 
-[POC](./damn-vulnerable-defi/test/backdoor/Backdoor.t.sol) :
+[POC](./test/backdoor/Backdoor.t.sol) :
 ```
     function test_backdoor() public checkSolvedByPlayer {
              Exploit exploit = new Exploit(address(singletonCopy),address(walletFactory),address(walletRegistry),address(token),recovery);
@@ -876,7 +876,7 @@ function execute(address[] calldata targets, uint256[] calldata values, bytes[] 
 
 - 過關流程: grantRole 拿到 PROPOSER_ROLE -> updateDelay to 0 -> transferOwnership -> timelockSchedule -> upgrade contract -> withdraw -> done
 
-[POC](./damn-vulnerable-defi/test/climber/Climber.t.sol) :
+[POC](./test/climber/Climber.t.sol) :
 
 ```
     function test_climber() public checkSolvedByPlayer {
@@ -960,7 +960,7 @@ contract PawnedClimberVault is ClimberVault {
 - 透過 computeCreate2Address 預算 USER_DEPOSIT_ADDRESS 得到 nonce 為13, 再透過題目 walletDeployer.drop() 透過 createProxyWithNonce 建立 User's safe wallet
 - AuthorizerUpgradeable 佔用 slot0 needsInit, 存在 Storage collision. 我們可以初始化用戶錢包將守衛者 (ward) 改為自己, 收到1ETH.
 
-[POC](./damn-vulnerable-defi/test/wallet-mining/WalletMining.t.sol) :
+[POC](./test/wallet-mining/WalletMining.t.sol) :
  
 ```
     // Find the correct nonce using computeCreate2Address                      
@@ -1012,7 +1012,7 @@ contract PawnedClimberVault is ClimberVault {
 ```
 - Pool 裡有 100 個 WETH 和 100 個 DVT 代幣，流動性較小,PuppetV3Pool.sol合約使用了10分鐘的TWAP期來計算DVT代幣的價格, 這個設定使合約容易受到價格操控攻擊的影響, 無需付出太多成本! 有了這個方法後, 我們可以透過我們擁有的 110 DVT 代幣換成 WETH, 使 DVT 代幣變得超級便宜. 因為oracle會根據過去10分鐘的價格數據來計算當前價格。然而，由於TWAP期較短，只需在這10分鐘內大幅度操作交易（如大筆兌換DVT），即可顯著影響報價. 由於TWAP是一種延遲報價機制，在操控價格後，有一個短暫的時間窗口（例如110秒）讓攻擊者利用降低的價格進行不公平的借貸。這個時間窗口允許攻擊者在TWAP價格尚未恢復到正常水平之前，最大化利用這個價格差距來實現獲利.
 
-[POC](./damn-vulnerable-defi/test/puppet-v3/PuppetV3.t.sol) :
+[POC](./test/puppet-v3/PuppetV3.t.sol) :
 
 ```
     function test_puppetV3() public checkSolvedByPlayer {
@@ -1088,7 +1088,7 @@ player 可以執行- withdraw 0xd9caed12
 85fb709d00000000000000000000000073030b99950fb19c6a813465e58a0bca5487fbea0000000000000000000000008ad159a275aee56fb2334dbb69036e9c7bacee9b
 ```
 
-[POC](./damn-vulnerable-defi/test/abi-smuggling/ABISmuggling.t.sol) :
+[POC](./test/abi-smuggling/ABISmuggling.t.sol) :
 ```
     function test_abiSmuggling() public checkSolvedByPlayer {
         Exploit exploit = new Exploit(address(vault),address(token),recovery);
@@ -1222,7 +1222,7 @@ If you hex decode 48656c6c6f2c20776f726c6421 you will get "Hello, world!".
 ```
 
 
-[POC](./damn-vulnerable-defi/test/shards/Shards.t.sol) :
+[POC](./test/shards/Shards.t.sol) :
 
 ```
  
@@ -1332,7 +1332,7 @@ eaebef7f15fdaa66ecd4533eefea23a183ced29967ea67bc4219b0f1f8b0d3ba // id
  
 - 最後再把救援的token,還給tokenBridge.
 
-[POC](./damn-vulnerable-defi/test/withdrawal/Withdrawal.t.sol) :
+[POC](./test/withdrawal/Withdrawal.t.sol) :
 
 ```
     function test_withdrawal() public checkSolvedByPlayer {
