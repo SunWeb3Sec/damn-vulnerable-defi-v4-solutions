@@ -972,7 +972,7 @@ Solution:
                 keccak256(abi.encodePacked(type(SafeProxy).creationCode, uint256(uint160(address(singletonCopy))))), //initCodeHash
                 address(proxyFactory)
             );
-    // 另一種寫法  Find the correct nonce using manual CREATE2 address   
+    // Another way:  Find the correct nonce using manual CREATE2 address   
          // Calculate the salt (combining the initializer hash and nonce)
             bytes32 salt = keccak256(abi.encodePacked(keccak256(initializer), nonce));
 
