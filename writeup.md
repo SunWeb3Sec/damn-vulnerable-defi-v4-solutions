@@ -2,8 +2,6 @@
 
 Writeup by [SunSec](https://x.com/1nf0s3cpt)
 
-![Screenshot 2024-09-11 at 10 18 33 AM](https://github.com/user-attachments/assets/7e3df1a1-3fc6-4d01-8860-88e06ef820f1)
-
 ### 1. Unstoppable
 --- 
 [Challenge](https://www.damnvulnerabledefi.xyz/challenges/unstoppable/): 
