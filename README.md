@@ -1,6 +1,6 @@
-# Damn Vulnerable DeFi Solutions
+# Damn Vulnerable DeFi v4 Solutions
 
-[Damn Vulnerable DeFi](https://www.damnvulnerabledefi.xyz/)
+[Damn Vulnerable DeFi v4 Official Website](https://www.damnvulnerabledefi.xyz/)
 
 ---
 
@@ -48,6 +48,6 @@ Full verion [English](./writeup.md) | [HackMD](https://hackmd.io/@SunWeb3Sec/rkw
  18.Withdrawal [English](./writeup.md#18-withdrawal) | [中文版](./writeup-cht.md#18-withdrawal) 
 
 ### Solutions
-[Foundry PoC](./test)
+[PoC](./test)
 
 ![366274464-7e3df1a1-3fc6-4d01-8860-88e06ef820f1](https://github.com/user-attachments/assets/5e4ec081-0876-401a-9f83-9219ffa473f8)
